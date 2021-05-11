@@ -4,25 +4,24 @@ import {Route, Switch, Redirect} from 'react-router-dom'
 import Typography from '@material-ui/core/Typography';
 import Home from './components/Home'
 import Lecture from './components/Lecture';
-import FingerprintJS from '@fingerprintjs/fingerprintjs-pro'
+import FingerprintJS from '@fingerprintjs/fingerprintjs'
 
 function App(history) {
   const [idUser, setIdUser] = useState("") 
 
   useEffect(() => {
-    console.log("APP.JS_1: ", idUser)
-    console.log("APP.JS_2: ", idUser)
+    // console.log("APP.JS_1: ", idUser)
+    // console.log("APP.JS_2: ", idUser)
     console.log("EFFECT")
     const fpPromise = FingerprintJS.load({token: 'LPlkkNqfidglSXPvaqoC'})
     ;(async () => {
       const fp = await fpPromise
       const result = await fp.get()
     
-      const visitorId = result.visitorId
       console.log("App.js:",result.visitorId)
       setIdUser(result.visitorId)
     })()
-  });
+  }, []);
   
   const [lectures, setLectures] = useState([
     {
@@ -44,8 +43,12 @@ function App(history) {
     <div className="App" >
       <Typography variant="h3" gutterBottom>Оцените лекцию!</Typography>
       <Switch>
-            <Route history={history} path='/home' render={()=><Home lectures={lectures} userId={idUser} />} />
-            <Route history={history} path='/lecture/:id' render={()=><Lecture lectures={lectures} userId={idUser}/>} />
+            <Route history={history} path='/home' component={ () => 
+                <Home lectures={lectures} userId={idUser} /> } />
+            <Route history={history} path='/lecture/:id' component={ () =>
+                <Lecture lectures={lectures} userId={idUser} /> } />
+            {/* <Route history={history} path='/home' render={()=><Home lectures={lectures} userId={idUser} />} /> 
+            <Route history={history} path='/lecture/:id' render={()=><Lecture lectures={lectures} userId={idUser}/>} /> */}
             <Redirect from='/' to='/home'/>
       </Switch>
     </div>

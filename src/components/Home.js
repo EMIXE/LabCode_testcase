@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import FormControl from '@material-ui/core/FormControl';
 import { makeStyles } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -43,9 +43,9 @@ function Home({lectures, userId}) {
                     value={idLec}
                     onChange={handleChange}
                 >
-                {lectures.map((lecture) => {
+                {lectures.map((lecture, key) => {
                     return(
-                        <MenuItem value={lecture.id}>{lecture.name}</MenuItem>
+                        <MenuItem key={key} value={lecture.id}>{lecture.name}</MenuItem>
                     )
                 })}
                 </Select>

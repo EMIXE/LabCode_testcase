@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/firestore';
+const cors = require('cors')({origin: true});
 
 const firebaseConfig = {
     apiKey: "AIzaSyDOkNwDgZnR_dDLnwEzpZyX_KZtnDRP4ao",

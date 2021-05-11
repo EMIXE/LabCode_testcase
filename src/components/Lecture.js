@@ -14,28 +14,36 @@ function Lecture({lectures, userId}) {
     const [isVoted, setIsVoted] = useState(false)
     const [isLoaded, setIsLoaded] = useState(false);
 
-    async function checkUserVote() {
-        let voteOfUser = []
-        const result = await db.collection('votes').where("idLec", "==", lecId).where("user", "==", userId).get().then((snap) => {
-            snap.forEach(doc => {
-                console.log(doc.data())
-                voteOfUser.push(doc.data())
-            })
-          });
-        console.log("vote user:", voteOfUser)
-        if (voteOfUser.length !== 0) {
-            setIsVoted(true)
-        }
-        console.log("Lecture.js", userId)
-        setIsLoaded(true);
-    }
-
     useEffect(() => {
         console.log("userId: ",userId)
-        checkUserVote()
+        let cleanupFunction = false;
 
-        console.log("isVoted: ", isVoted);
-    })
+        const checkUserVote = () => {
+            let voteOfUser = []
+            db.collection('votes').where("idLec", "==", lecId).where("user", "==", userId).get().then((snap) => {
+                snap.forEach(doc => {
+                    console.log("DATA CHECK: ", doc.data())
+                    voteOfUser.push(doc.data())
+                })
+            }).then(() => {
+            if (voteOfUser.length !== 0 && !cleanupFunction) {
+                setIsVoted(true)
+            }}
+          ).then(() => {
+              if(!cleanupFunction) {
+                setIsLoaded(true);
+              }
+          });        
+        }
+
+        checkUserVote()
+        //checkUserVote()
+        return () => cleanupFunction = true;
+    }, [checkUserVote])
+
+    function checkUserVote() {
+        
+    }
 
     async function addVote(textFace) {
         await db.collection('votes').add({idLec: lecture.id, name: lecture.name, user: userId, vote: textFace})
@@ -54,8 +62,8 @@ function Lecture({lectures, userId}) {
                             <Typography variant="h4" gutterBottom>{lecture.name}</Typography>
                             <Typography variant="h5" gutterBottom>Данный пользователь: {userId}</Typography>
                             <Container maxWidth="sm" style={{display: 'flex', justifyContent: 'center'}}>
-                                {faces.map((face) => {
-                                return(<Emoji key={face} face={face} faceHandler={addVote}/>)
+                                {faces.map((face, key) => {
+                                return(<Emoji key={key} face={face} faceHandler={addVote}/>)
                             })}
                             </Container>
                     </div>
@@ -73,6 +81,5 @@ function Lecture({lectures, userId}) {
 
     return (<Loader loaded={isLoaded}>{renderPage()}</Loader>)
 }
-    
 
 export default Lecture
